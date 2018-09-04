@@ -44,5 +44,29 @@ public class StudentDAOListImple implements StudentDAO {
         return null;
 //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public Student findByLastName(String lastName) {
+       lastName = lastName.toLowerCase().trim();
+       
+        for (Student student : studentList) {
+            if(student.getLastName().toLowerCase().contains(lastName)){
+                return student;
+            }
+            
+        }
+        return null;
+    }
+
+    @Override
+    public void delete(Student student) {
+    studentList.remove(student);
+    }
+
+    @Override
+    public void update(Student student) {
+        int pos = studentList.lastIndexOf(student);
+        studentList.set(pos, student); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }
