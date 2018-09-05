@@ -29,7 +29,8 @@ public class StudentBLO {
     public Student find (String id){
         return studentDAO.find(id);
     }
-    public Student findByLastName (String lastName){
+    public List<Student> findByLastName (String lastName){
+        
         return studentDAO.findByLastName(lastName);
     }
      public void delete(Student student) {
@@ -41,4 +42,10 @@ public class StudentBLO {
          studentDAO.update(student);
     }
     
+    public void load(){
+        studentDAO.load();
+    }
+    public void commitChanges() {
+      studentDAO.commitChanges();
+    }
 }

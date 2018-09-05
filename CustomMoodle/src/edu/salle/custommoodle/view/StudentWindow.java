@@ -9,6 +9,7 @@ import edu.salle.custommoodle.businesslogic.StudentBLO;
 import edu.salle.custommoodle.model.Student;
 import static java.util.Collections.list;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -23,6 +24,7 @@ public class StudentWindow extends javax.swing.JFrame {
      */
     public StudentWindow()  {
         initComponents();
+        studentBLO.load();
     }
 
     /**
@@ -41,7 +43,7 @@ public class StudentWindow extends javax.swing.JFrame {
         tfName = new javax.swing.JTextField();
         tfLastName = new javax.swing.JTextField();
         BtnSave = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        javax.swing.JButton btnSearch = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         tfId = new javax.swing.JTextField();
         btnUpadate = new javax.swing.JButton();
@@ -49,6 +51,7 @@ public class StudentWindow extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         tStudents = new javax.swing.JTable();
         btnRefresh = new javax.swing.JButton();
+        bexit = new javax.swing.JButton();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -88,10 +91,10 @@ public class StudentWindow extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Search");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnSearchActionPerformed(evt);
             }
         });
 
@@ -123,6 +126,13 @@ public class StudentWindow extends javax.swing.JFrame {
         btnRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRefreshActionPerformed(evt);
+            }
+        });
+
+        bexit.setText("Exit");
+        bexit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bexitActionPerformed(evt);
             }
         });
 
@@ -158,14 +168,18 @@ public class StudentWindow extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(BtnSave)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1)
+                                .addComponent(btnSearch)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnUpadate)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnDelete)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                         .addComponent(btnRefresh)
                         .addContainerGap())))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(bexit)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -185,13 +199,14 @@ public class StudentWindow extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(BtnSave)
-                    .addComponent(jButton1)
+                    .addComponent(btnSearch)
                     .addComponent(btnUpadate)
                     .addComponent(btnDelete)
                     .addComponent(btnRefresh))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31))
+                .addGap(2, 2, 2)
+                .addComponent(bexit))
         );
 
         pack();
@@ -211,18 +226,31 @@ public class StudentWindow extends javax.swing.JFrame {
         String lastName = tfLastName.getText();
         Student student = new Student (Name, lastName);
         studentBLO.save(student);
+        tfName.setText("");
+        tfLastName.setText("");
     }//GEN-LAST:event_BtnSaveActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
         
-        String id  = tfId.getText();
-        Student student = studentBLO.find(id);
-        if(student != null){
-            tfName.setText(student.getName());
-            tfLastName.setText(student.getLastName());
+//        String id  = tfId.getText();
+//        Student student = studentBLO.find(id);
+//        if(student != null){
+//            tfName.setText(student.getName());
+//            tfLastName.setText(student.getLastName());
+//        }
+
+
+        String lastName = tfLastName.getText().trim();
+        if(!lastName.isEmpty()){
+        List<Student> studentList = studentBLO.findByLastName(lastName);
+        if(!studentList.isEmpty()){
+        refreshTable(studentList);
+        }else {
+            JOptionPane.showMessageDialog(null, "You need to fill lastname");
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+        }
+    }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnUpadateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpadateActionPerformed
         // TODO add your handling code here:
@@ -230,10 +258,20 @@ public class StudentWindow extends javax.swing.JFrame {
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         
-        refreshTable();
+        refreshTable(studentBLO.findAll());
 
         // TODO add your handling code here:
     }//GEN-LAST:event_btnRefreshActionPerformed
+
+    private void bexitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bexitActionPerformed
+
+        // TODO add your handling code here:
+       
+        studentBLO.commitChanges();
+        this.dispose();
+        
+        
+    }//GEN-LAST:event_bexitActionPerformed
 
     private void clearTable(){
         DefaultTableModel dtm = (DefaultTableModel) tStudents.getModel();
@@ -242,9 +280,9 @@ public class StudentWindow extends javax.swing.JFrame {
         }
     }
     
-private void refreshTable(){
+private void refreshTable(List<Student> studentList){
     clearTable();
-      List<Student> studentList = studentBLO.findAll();
+   
       DefaultTableModel dtm = (DefaultTableModel) tStudents.getModel();
       Object [] emptyRow = {""};
       for (int i = 0; i < studentList.size(); i++) {
@@ -256,10 +294,10 @@ private void refreshTable(){
 }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnSave;
+    private javax.swing.JButton bexit;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnUpadate;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
